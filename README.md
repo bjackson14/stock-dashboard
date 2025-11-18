@@ -2,58 +2,43 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.10.
 
-## Development server
+# Setup Instructions
 
-To start a local development server, run:
+## Prerequisites
+- Node.js 18.19+ or 20.11+
+- npm
+- Alpha Vantage API key - [Get one here](https://www.alphavantage.co/support/#api-key)
 
+## Installation
+
+1. **Clone the repository**
 ```bash
-ng serve
+   git clone https://github.com/bjackson14/stock-dashboard.git
+   cd stock-dashboard
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+2. **Install dependencies**
 ```bash
-ng generate component component-name
+   npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
+3. **Configure API Key**
+   
+   Copy the environment template files:
 ```bash
-ng generate --help
+   cp src/environments/environment.development.template.ts src/environments/environment.development.ts
+   cp src/environments/environment.template.ts src/environments/environment.ts
 ```
+   
+   Open `src/environments/environment.development.ts` and replace `'REPLACE_WITH_YOUR_API_KEY'` with your actual Alpha Vantage API key.
 
-## Building
-
-To build the project run:
-
+4. **Run the application**
 ```bash
-ng build
+   ng serve
 ```
+   
+   Navigate to `http://localhost:4200` in your browser.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## About the API Key
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+This project uses the Alpha Vantage API to stock market data. A free API key provides 25 requests per day.
