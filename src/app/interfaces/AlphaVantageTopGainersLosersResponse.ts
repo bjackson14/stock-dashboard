@@ -1,9 +1,9 @@
 import { StockData } from "./StockData";
 
-export interface AlphaVantageResponse {
+export interface AlphaVantageTopGainersLosersResponse {
   metadata: string;
-  lastUpdated: string;
-  topGainers: StockData[];
-  topLosers: StockData[];
-  mostActivelyTraded: StockData[];
+  last_updated: string;
+  top_gainers: StockData[];
+  top_losers: StockData[];
+  most_actively_traded: StockData[];
 }

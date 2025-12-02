@@ -1,7 +1,7 @@
 export interface StockData {
   ticker: string;
   price: string;
-  changeAmount: string;
-  changePercentage: string;
+  change_amount: string;
+  change_percentage: string;
   volume: string;
 }
