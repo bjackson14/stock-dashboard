@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { LucideAngularModule, TrendingUp, TrendingDown } from 'lucide-angular';
-import { StockService } from '../services/stock.service';
+import { StockService } from '../../services/stock.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-stock-dashboard',
@@ -13,6 +14,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 })
 export class StockDashboardComponent {
   private readonly stockService = inject(StockService);
+  private readonly router = inject(Router);
   
   readonly TrendingUp = TrendingUp;
   readonly TrendingDown = TrendingDown;
@@ -32,4 +34,8 @@ export class StockDashboardComponent {
       .sort((a, b) => parseFloat(a.change_amount) - parseFloat(b.change_amount))
       .slice(0, 5);
   });
+
+  navigateToDetail(ticker: string): void {
+    this.router.navigate(['/stock', ticker]);
+  }
 }

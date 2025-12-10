@@ -4,8 +4,8 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { of } from 'rxjs';
 import { StockDashboardComponent } from './stock-dashboard.component';
-import { StockService } from '../services/stock.service';
-import { StockData } from '../interfaces/StockData';
+import { StockService } from '../../services/stock.service';
+import { StockData } from '../../interfaces/StockData';
 
 describe('StockDashboardComponent', () => {
   let component: StockDashboardComponent;
