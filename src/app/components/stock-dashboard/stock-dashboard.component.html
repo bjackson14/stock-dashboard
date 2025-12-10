@@ -17,7 +17,14 @@
         
         <ul class="divide-y divide-gray-200" role="list">
           @for (stock of topGainers(); track stock.ticker) {
-            <li class="px-6 py-4 hover:bg-green-50 transition-colors">
+            <li 
+              class="px-6 py-4 hover:bg-green-50 transition-colors"
+              (click)="navigateToDetail(stock.ticker)"
+              (keydown.enter)="navigateToDetail(stock.ticker)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'View details for ' + stock.ticker"
+            >
               <article>
                 <div class="flex justify-between items-center">
                   <div>
@@ -51,7 +58,14 @@
         
         <ul class="divide-y divide-gray-200" role="list">
           @for (stock of topLosers(); track stock.ticker) {
-            <li class="px-6 py-4 hover:bg-red-50 transition-colors">
+            <li 
+              class="px-6 py-4 hover:bg-red-50 transition-colors"
+              (click)="navigateToDetail(stock.ticker)"
+              (keydown.enter)="navigateToDetail(stock.ticker)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'View details for ' + stock.ticker"
+            >
               <article>
                 <div class="flex justify-between items-center">
                   <div>

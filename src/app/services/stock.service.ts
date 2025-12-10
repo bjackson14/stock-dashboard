@@ -4,6 +4,8 @@ import { environment } from '../../environments/environment';
 import { catchError, map, Observable, of } from 'rxjs';
 import { StockData } from '../interfaces/StockData';
 import { AlphaVantageTopGainersLosersResponse } from '../interfaces/AlphaVantageTopGainersLosersResponse';
+import { TimeSeriesDataPoint } from '../interfaces/TimeSeriesDataPoint';
+import { AlphaVantageTimeSeriesResponse } from '../interfaces/AlphaVantageTimeSeriesResponse';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +26,33 @@ export class StockService {
       catchError(error => {
         console.error('Error fetching stock data:', error);
         return of({ topGainers: [], topLosers: [] });
+      })
+    );
+  }
+
+  getTimeSeriesDaily(symbol: string): Observable<TimeSeriesDataPoint[]> {
+    const url = `${this.baseUrl}?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${this.apiKey}`;
+
+
+    return this.http.get<AlphaVantageTimeSeriesResponse>(url).pipe(
+      map(response => {
+        const timeSeries = response['Time Series (Daily)'];
+        if (!timeSeries) {
+          return [];
+        }
+
+        return Object.entries(timeSeries).map(([date, values]) => ({
+          date,
+          open: values['1. open'],
+          high: values['2. high'],
+          low: values['3. low'],
+          close: values['4. close'],
+          volume: values['5. volume']
+        })).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      }),
+      catchError(error => {
+        console.error('Error fetching time series data:', error);
+        return of([])
       })
     );
   }

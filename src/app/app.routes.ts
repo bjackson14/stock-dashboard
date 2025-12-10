@@ -1,9 +1,15 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   {
-    path: '', 
-    loadComponent: () =>  import('./stock-dashboard/stock-dashboard.component')
+    path: 'dashboard', 
+    loadComponent: () =>  import('./components/stock-dashboard/stock-dashboard.component')
       .then(m => m.StockDashboardComponent)
-  }
+  },
+  {
+    path: 'stock/:ticker',
+    loadComponent: () => import('./components/stock-detail/stock-detail.component')
+      .then(m => m.StockDetailComponent)
+  },
 ];
