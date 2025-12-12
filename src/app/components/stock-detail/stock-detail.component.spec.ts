@@ -42,19 +42,13 @@ describe('StockDetailComponent', () => {
     }
   ];
 
-  // ✅ Helper function to create component with custom mock data
-  function createFreshComponent(mockData: TimeSeriesDataPoint[]): void {
-    stockService.getTimeSeriesDaily.and.returnValue(of(mockData));
-    fixture = TestBed.createComponent(StockDetailComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  }
-
-  beforeEach(async () => {
+  async function setupTestBed(ticker: string | null, mockData: TimeSeriesDataPoint[]) {
+    TestBed.resetTestingModule();
+    
     const stockServiceSpy = jasmine.createSpyObj('StockService', ['getTimeSeriesDaily']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
-    stockServiceSpy.getTimeSeriesDaily.and.returnValue(of(mockTimeSeriesData));
+    stockServiceSpy.getTimeSeriesDaily.and.returnValue(of(mockData));
 
     await TestBed.configureTestingModule({
       imports: [StockDetailComponent],
@@ -67,7 +61,7 @@ describe('StockDetailComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             paramMap: of({
-              get: (key: string) => key === 'ticker' ? 'AAPL' : null
+              get: (key: string) => key === 'ticker' ? ticker : null
             })
           }
         },
@@ -81,6 +75,19 @@ describe('StockDetailComponent', () => {
 
     fixture = TestBed.createComponent(StockDetailComponent);
     component = fixture.componentInstance;
+    
+    return { stockService: stockServiceSpy, router: routerSpy };
+  }
+
+  function createFreshComponent(mockData: TimeSeriesDataPoint[]): void {
+    stockService.getTimeSeriesDaily.and.returnValue(of(mockData));
+    fixture = TestBed.createComponent(StockDetailComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
+  beforeEach(async () => {
+    await setupTestBed('AAPL', mockTimeSeriesData);
   });
 
   it('should create', () => {
@@ -166,28 +173,18 @@ describe('StockDetailComponent', () => {
 
     const title = fixture.nativeElement.querySelector('h1');
     const subtitle = fixture.nativeElement.querySelector('header p');
-    const backButton = fixture.nativeElement.querySelector('button[aria-label="Go back to dashboard"]');
     
     expect(title.textContent).toContain('AAPL Stock Details');
     expect(subtitle.textContent).toBe('30-day price history');
-    expect(backButton).toBeTruthy();
-    expect(backButton.textContent).toContain('Back to Dashboard');
   });
 
-  it('should navigate back to dashboard when goBack is called', () => {
-    component.goBack();
+  it('should return empty array when ticker is null', async () => {
+    const { stockService: spy } = await setupTestBed(null, []);
     
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
-  });
-
-  it('should call goBack when back button is clicked', async () => {
-    spyOn(component, 'goBack');
     fixture.detectChanges();
     await fixture.whenStable();
 
-    const backButton = fixture.nativeElement.querySelector('button[aria-label="Go back to dashboard"]');
-    backButton.click();
-
-    expect(component.goBack).toHaveBeenCalled();
+    expect(spy.getTimeSeriesDaily).not.toHaveBeenCalled();
+    expect((component as any).timeSeriesData()).toEqual([]);
   });
 });

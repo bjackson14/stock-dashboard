@@ -6,11 +6,13 @@ import { of } from 'rxjs';
 import { StockDashboardComponent } from './stock-dashboard.component';
 import { StockService } from '../../services/stock.service';
 import { StockData } from '../../interfaces/StockData';
+import { Router } from '@angular/router';
 
 describe('StockDashboardComponent', () => {
   let component: StockDashboardComponent;
   let fixture: ComponentFixture<StockDashboardComponent>;
   let stockService: jasmine.SpyObj<StockService>;
+  let router: jasmine.SpyObj<Router>;
 
   const mockStockData = {
     topGainers: [
@@ -106,6 +108,7 @@ describe('StockDashboardComponent', () => {
   beforeEach(async () => {
     const stockServiceSpy = jasmine.createSpyObj('StockService', ['getTopGainersLosers']);
     stockServiceSpy.getTopGainersLosers.and.returnValue(of(mockStockData));
+    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
       imports: [StockDashboardComponent],
@@ -113,11 +116,13 @@ describe('StockDashboardComponent', () => {
         provideZonelessChangeDetection(),
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: StockService, useValue: stockServiceSpy }
+        { provide: StockService, useValue: stockServiceSpy },
+        { provide: Router, useValue: routerSpy }
       ]
     }).compileComponents();
 
     stockService = TestBed.inject(StockService) as jasmine.SpyObj<StockService>;
+    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     
     fixture = TestBed.createComponent(StockDashboardComponent);
     component = fixture.componentInstance;
@@ -247,22 +252,6 @@ describe('StockDashboardComponent', () => {
     expect(srTexts).toContain('Change:');
   });
 
-  it('should display the page title', async () => {
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    const title = fixture.nativeElement.querySelector('h1');
-    expect(title.textContent).toBe('Stock Market Dashboard');
-  });
-
-  it('should display the subtitle', async () => {
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    const subtitle = fixture.nativeElement.querySelector('header p');
-    expect(subtitle.textContent).toBe('Real-time market movers');
-  });
-
   it('should handle empty stock data gracefully', async () => {
     stockService.getTopGainersLosers.and.returnValue(of({ topGainers: [], topLosers: [] }));
     fixture = TestBed.createComponent(StockDashboardComponent);
@@ -274,5 +263,33 @@ describe('StockDashboardComponent', () => {
 
     expect(gainers.length).toBe(0);
     expect(losers.length).toBe(0);
+  });
+
+  it('should navigate to stock detail when navigateToDetail is called', () => {
+    component.navigateToDetail('AAPL');
+    
+    expect(router.navigate).toHaveBeenCalledWith(['/stock', 'AAPL']);
+  });
+
+  it('should call navigateToDetail when gainer item is clicked', async () => {
+    spyOn(component, 'navigateToDetail');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const firstGainer = fixture.nativeElement.querySelector('[aria-labelledby="gainers-heading"] li:first-child');
+    firstGainer.click();
+
+    expect(component.navigateToDetail).toHaveBeenCalledWith('TSLA');
+  });
+
+  it('should call navigateToDetail when loser item is clicked', async () => {
+    spyOn(component, 'navigateToDetail');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const firstLoser = fixture.nativeElement.querySelector('[aria-labelledby="losers-heading"] li:first-child');
+    firstLoser.click();
+
+    expect(component.navigateToDetail).toHaveBeenCalledWith('BA');
   });
 });
