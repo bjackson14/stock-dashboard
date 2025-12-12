@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HighchartsChartComponent } from 'highcharts-angular';
 import * as Highcharts from 'highcharts';
@@ -19,7 +19,6 @@ import { of } from 'rxjs';
 })
 export class StockDetailComponent {
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly stockService = inject(StockService);
 
   readonly ArrowLeft = ArrowLeft;
@@ -87,8 +86,4 @@ export class StockDetailComponent {
   loading = computed(() => {
     return this.timeSeriesData().length === 0;
   });
-
-  goBack(): void {
-    this.router.navigate(['/dashboard']);
-  }
 }

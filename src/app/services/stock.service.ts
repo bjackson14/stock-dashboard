@@ -6,6 +6,8 @@ import { StockData } from '../interfaces/StockData';
 import { AlphaVantageTopGainersLosersResponse } from '../interfaces/AlphaVantageTopGainersLosersResponse';
 import { TimeSeriesDataPoint } from '../interfaces/TimeSeriesDataPoint';
 import { AlphaVantageTimeSeriesResponse } from '../interfaces/AlphaVantageTimeSeriesResponse';
+import { AlphaVantageSymbolSearchResponse } from '../interfaces/AlphaVantageSymboleSearcgResponse';
+import { SymbolSearchResult } from '../interfaces/SymbolSerachResult';
 
 @Injectable({
   providedIn: 'root',
@@ -53,6 +55,22 @@ export class StockService {
       catchError(error => {
         console.error('Error fetching time series data:', error);
         return of([])
+      })
+    );
+  }
+
+  searchSymbol(keywords: string): Observable<SymbolSearchResult[]> {
+    if (!keywords || keywords.trim().length === 0) {
+      return of([]);
+    }
+
+    const url = `${this.baseUrl}?function=SYMBOL_SEARCH&keywords=${keywords}&apikey=${this.apiKey}`;
+    
+    return this.http.get<AlphaVantageSymbolSearchResponse>(url).pipe(
+      map(response => response.bestMatches || []),
+      catchError(error => {
+        console.error('Error searching symbols:', error);
+        return of([]);
       })
     );
   }

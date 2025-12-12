@@ -1,11 +1,7 @@
 <div class="container mx-auto px-4 py-8">
-  <header class="mb-8">
-    <h1 class="text-4xl font-bold text-gray-800 mb-2">Stock Market Dashboard</h1>
-    <p class="text-gray-600">Real-time market movers</p>
-  </header>
 
   @if (topGainers().length > 0 || topLosers().length > 0) {
-    <main class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       
       <section aria-labelledby="gainers-heading" class="bg-white rounded-lg shadow-lg overflow-hidden">
         <header class="bg-gradient-to-r from-green-700 to-green-800 px-6 py-4">
@@ -89,7 +85,7 @@
         </ul>
       </section>
 
-    </main>
+    </div>
   } @else {
     <div class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>

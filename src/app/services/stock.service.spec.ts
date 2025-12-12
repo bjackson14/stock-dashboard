@@ -209,4 +209,118 @@ describe('StockService', () => {
       });
     });
   });
+
+  describe('searchSymbol', () => {
+    it('should search for stock symbols successfully', () => {
+      const mockResponse = {
+        bestMatches: [
+          {
+            '1. symbol': 'AAPL',
+            '2. name': 'Apple Inc',
+            '3. type': 'Equity',
+            '4. region': 'United States',
+            '5. marketOpen': '09:30',
+            '6. marketClose': '16:00',
+            '7. timezone': 'UTC-04',
+            '8. currency': 'USD',
+            '9. matchScore': '1.0000'
+          },
+          {
+            '1. symbol': 'GOOGL',
+            '2. name': 'Alphabet Inc',
+            '3. type': 'Equity',
+            '4. region': 'United States',
+            '5. marketOpen': '09:30',
+            '6. marketClose': '16:00',
+            '7. timezone': 'UTC-04',
+            '8. currency': 'USD',
+            '9. matchScore': '0.8000'
+          }
+        ]
+      };
+
+      service.searchSymbol('apple').subscribe({
+        next: (result) => {
+          expect(result.length).toBe(2);
+          expect(result[0]['1. symbol']).toBe('AAPL');
+          expect(result[0]['2. name']).toBe('Apple Inc');
+          expect(result[0]['3. type']).toBe('Equity');
+          expect(result[0]['4. region']).toBe('United States');
+          expect(result[0]['5. marketOpen']).toBe('09:30');
+          expect(result[0]['6. marketClose']).toBe('16:00');
+          expect(result[0]['7. timezone']).toBe('UTC-04');
+          expect(result[0]['8. currency']).toBe('USD');
+          expect(result[0]['9. matchScore']).toBe('1.0000');
+
+          expect(result[1]['1. symbol']).toBe('GOOGL');
+          expect(result[1]['2. name']).toBe('Alphabet Inc');
+          expect(result[1]['3. type']).toBe('Equity');
+          expect(result[1]['4. region']).toBe('United States');
+          expect(result[1]['5. marketOpen']).toBe('09:30');
+          expect(result[1]['6. marketClose']).toBe('16:00');
+          expect(result[1]['7. timezone']).toBe('UTC-04');
+          expect(result[1]['8. currency']).toBe('USD');
+          expect(result[1]['9. matchScore']).toBe('0.8000');
+        }
+      });
+
+      const expectedUrl = `${environment.apiBaseUrl}?function=SYMBOL_SEARCH&keywords=apple&apikey=${environment.alphaVantageApiKey}`;
+      const req = httpMock.expectOne(expectedUrl);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockResponse);
+    });
+
+    it('should return empty array when keywords is empty', () => {
+      service.searchSymbol('').subscribe({
+        next: (result) => {
+          expect(result).toEqual([]);
+        }
+      });
+
+      httpMock.expectNone(() => true);
+    });
+
+    it('should return empty array when keywords is whitespace', () => {
+      service.searchSymbol('   ').subscribe({
+        next: (result) => {
+          expect(result).toEqual([]);
+        }
+      });
+
+      httpMock.expectNone(() => true);
+    });
+
+    it('should return empty array when bestMatches is missing', () => {
+      const mockResponse = {};
+
+      service.searchSymbol('test').subscribe({
+        next: (result) => {
+          expect(result).toEqual([]);
+        }
+      });
+
+      const expectedUrl = `${environment.apiBaseUrl}?function=SYMBOL_SEARCH&keywords=test&apikey=${environment.alphaVantageApiKey}`;
+      const req = httpMock.expectOne(expectedUrl);
+      req.flush(mockResponse);
+    });
+
+    it('should return empty array when API call fails', () => {
+      const consoleErrorSpy = spyOn(console, 'error');
+
+      service.searchSymbol('test').subscribe({
+        next: (result) => {
+          expect(result).toEqual([]);
+          expect(consoleErrorSpy).toHaveBeenCalled();
+        }
+      });
+
+      const expectedUrl = `${environment.apiBaseUrl}?function=SYMBOL_SEARCH&keywords=test&apikey=${environment.alphaVantageApiKey}`;
+      const req = httpMock.expectOne(expectedUrl);
+      
+      req.error(new ProgressEvent('Network error'), {
+        status: 500,
+        statusText: 'Internal Server Error'
+      });
+    });
+  });
 });

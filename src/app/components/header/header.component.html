@@ -1,0 +1,75 @@
+<header class="bg-gradient-to-r from-blue-800 to-blue-900 shadow-lg">
+  <div class="container mx-auto px-4 py-4">
+    <div class="flex items-center justify-between gap-4">
+      <div 
+        class="text-white text-2xl font-bold cursor-pointer hover:text-blue-100 transition-colors"
+        (click)="navigateHome()"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="navigateHome()"
+        aria-label="Go to dashboard"
+      >
+        Market Insights
+      </div>
+
+      <div class="flex items-center gap-2 flex-grow max-w-2xl">
+        <div class="relative flex-grow">
+          <input
+            type="text"
+            [value]="searchQuery()"
+            (input)="onSearchInput($any($event.target).value)"
+            (blur)="closeDropdown()"
+            placeholder="Search stocks (e.g., AAPL, Google)..."
+            class="w-full px-4 py-2 rounded-lg border-2 border-blue-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:border-white transition-colors"
+            aria-label="Search for stocks"
+          />
+
+          @if (showDropdown() && searchResults().length > 0) {
+            <div class="absolute z-10 w-full mt-2 bg-white rounded-lg shadow-xl max-h-96 overflow-y-auto">
+              <ul role="listbox">
+                @for (result of searchResults(); track result['1. symbol']) {
+                  <li
+                    class="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
+                    (click)="selectStock(result)"
+                    role="option"
+                    tabindex="0"
+                    (keydown.enter)="selectStock(result)"
+                  >
+                    <div class="flex justify-between items-center">
+                      <div>
+                        <div class="font-semibold text-gray-900">
+                          {{ result['2. name'] }}
+                        </div>
+                        <div class="text-sm text-gray-600">
+                          {{ result['1. symbol'] }} • {{ result['3. type'] }}
+                        </div>
+                      </div>
+                      <div class="text-xs text-gray-500">
+                        {{ result['4. region'] }}
+                      </div>
+                    </div>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+
+          @if (showDropdown() && searchQuery().trim().length > 0 && searchResults().length === 0) {
+            <div class="absolute z-10 w-full mt-2 bg-white rounded-lg shadow-xl p-4 text-center text-gray-600">
+              No results found
+            </div>
+          }
+        </div>
+
+        <button
+          (click)="viewStockDetails()"
+          [disabled]="!selectedStock()"
+          class="px-6 py-2 bg-white text-blue-800 font-semibold rounded-lg hover:bg-blue-50 transition-colors disabled:bg-gray-300 disabled:text-gray-800 disabled:cursor-not-allowed whitespace-nowrap"
+          aria-label="View stock details"
+        >
+          View Details
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
